@@ -5,6 +5,7 @@ import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
+import EmptyResultsComponent from "./components/EmptyResultsComponent";
 import ErrorComponent from "./components/ErrorComponent";
 import MovieCard from "./components/MovieCard";
 import getPopularMovies from "./data-layer.ts/getPopularMovies";
@@ -46,9 +47,7 @@ export function PopularMoviesList() {
 
   return (
     <div className="flex-1">
-      {status === "success" && items.length === 0 && (
-        <p className="font-semibold">No Results</p>
-      )}
+      {status === "success" && items.length === 0 && <EmptyResultsComponent />}
       {status === "error" && <ErrorComponent />}
       {status === "success" && items.length !== 0 && (
         <GridResponsiveList
