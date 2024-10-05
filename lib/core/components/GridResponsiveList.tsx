@@ -7,7 +7,10 @@ type ListProps<T> = {
   FooterComponent?: React.ReactNode;
   itemContainerStyle?: CSSProperties;
   listContainerStyle?: CSSProperties;
+  prefferedColumnSize?: number;
 };
+
+const DEFAULT_COLUMN_SIZE = 200;
 
 // TODO: TRY TO MAKE IT VIRUTALIZED
 const GridResponsiveList = <T,>({
@@ -17,6 +20,7 @@ const GridResponsiveList = <T,>({
   itemContainerStyle,
   listContainerStyle,
   FooterComponent,
+  prefferedColumnSize = DEFAULT_COLUMN_SIZE,
 }: ListProps<T>) => {
   return (
     <div
@@ -28,7 +32,7 @@ const GridResponsiveList = <T,>({
         className="p-3 "
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gridTemplateColumns: `repeat(auto-fill, minmax(${prefferedColumnSize}px, 1fr))`,
           gap: "0.5rem",
         }}
       >

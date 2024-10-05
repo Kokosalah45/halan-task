@@ -83,6 +83,7 @@ export default function MovieSearch() {
             {status === "error" && <p>{error.message}</p>}
             {status === "success" && items.length !== 0 && (
               <GridResponsiveList
+                prefferedColumnSize={300}
                 listContainerStyle={{
                   height: "200px",
                   overflow: "auto",
