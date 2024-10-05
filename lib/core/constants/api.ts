@@ -1,4 +1,6 @@
-import { env } from "../env.mjs";
-
-// for the future, so we can account for multiple environments
-const BASE_URL = env.NEXT_PUBLIC_BASE_URL;
+export const END_POINTS = {
+  keywordSearch: (searchTerm: string, page: number) =>
+    `search/keyword?page=${page}&query=${searchTerm}`,
+  popularMovies: (page: number) => `movie/popular?page=${page}`,
+  movieDetails: (id: string) => `movie/${id}`,
+};
