@@ -59,7 +59,7 @@ export default function SearchMovieFilter() {
         <Input
           className="p-1 h-auto"
           id="query"
-          value={params.current.get("query") || ""}
+          value={searchTerm}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setSearchTerm(e.target.value);
           }}
