@@ -1,13 +1,13 @@
 "use client";
 import GridResponsiveList from "@/lib/core/components/GridResponsiveList";
-import { Button } from "@/lib/core/components/ui/button";
 import { MovieSearchFilters } from "@/lib/core/constants/api";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
+import EmptyResultsComponent from "./components/EmptyResultsComponent";
+import ErrorComponent from "./components/ErrorComponent";
 import MovieCard from "./components/MovieCard";
 import getSearchedMovies from "./data-layer.ts/getSearchedMovies";
 
@@ -63,17 +63,8 @@ export function SearchedMoviesList({
 
   return (
     <div className="flex-1 flex justify-center items-center">
-      {status === "success" && items.length === 0 && (
-        <p className="text-red-600 font-semibold">No Results</p>
-      )}
-      {status === "error" && (
-        <div className="flex justify-center flex-col gap-2">
-          <p className="text-red-600 font-semibold">An Error Has Occured</p>
-          <Button asChild variant="destructive">
-            <Link href="/">Return Home</Link>
-          </Button>
-        </div>
-      )}
+      {status === "success" && items.length === 0 && <EmptyResultsComponent />}
+      {status === "error" && <ErrorComponent />}
       {status === "success" && items.length !== 0 && (
         <GridResponsiveList
           listContainerStyle={{
