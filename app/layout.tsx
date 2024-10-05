@@ -1,5 +1,18 @@
+import NetfluxLogo from "@/lib/core/components/icons/NetFluxLogo";
+import HeaderLayout from "@/lib/core/components/layout/Header";
+import Providers from "@/lib/core/Providers";
+import MovieSearch from "@/lib/features/KeywordSearch";
 import type { Metadata } from "next";
+import { Roboto_Mono } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
+
+const roboto_mono = Roboto_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["100", "200", "400", "700"],
+  variable: "--display-font",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +26,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>{children}</body>
+      <Providers>
+        <body
+          className={`antialiased min-h-screen flex flex-col ${roboto_mono.variable}`}
+        >
+          <HeaderLayout
+            startContent={
+              <Link href="/">
+                <NetfluxLogo width={100} height={50} />
+              </Link>
+            }
+            endContent={<MovieSearch />}
+          />
+          <main className="flex flex-col flex-1">{children}</main>
+        </body>
+      </Providers>
     </html>
   );
 }

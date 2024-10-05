@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -78,5 +74,9 @@ body {
 
   input {
     @apply focus-visible:ring-0 focus-visible:ring-offset-0;
+  }
+
+  .layout {
+    @apply max-w-[1200px] m-auto p-2;
   }
 }

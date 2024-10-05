@@ -8,7 +8,6 @@ interface SearchBarProps extends InputProps {
 
 const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
   ({ renderIcon, ...inputProps }, ref) => {
-    console.log({ renderIcon });
     return (
       <div className="flex items-center dark:bg-primary dark:text-white transition-all">
         {renderIcon ? (
