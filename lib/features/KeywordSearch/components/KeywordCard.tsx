@@ -1,6 +1,6 @@
 import BaseCard from "@/lib/core/components/BaseCard";
 import Clickable from "@/lib/core/components/Clickable";
-import { Keyword } from "../types";
+import { Keyword } from "@/lib/core/entities/Keyword";
 type KeywordCardProps = {
   keyword: Keyword;
   onClick: (keyword: Keyword) => void;

@@ -8,35 +8,47 @@ import {
 } from "@/lib/core/components/ui/dialog";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { useDeferredValue, useEffect, useState } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
 import KeywordCard from "./components/KeywordCard";
 import SearchButton from "./components/SearchButton";
 import getKeywords from "./data-layer/getKeywords";
 
-// api endpoint https://api.themoviedb.org/3/search/keyword?page=1
-
 export default function MovieSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const defferedSeachTerm = useDeferredValue(searchTerm);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
+  const onChooseKeyword = (keyword: string) => {
+    const isSearchPath = pathname.includes("/movie/search");
+    const pathName = isSearchPath ? pathname : "/movie/search";
+    router.push(`${pathName}?query=${keyword}`);
+    setOpen(false);
+    setSearchTerm("");
+  };
   const {
     data,
     error,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    status,
+    isError,
+    isSuccess,
+    isPending,
   } = useInfiniteQuery({
     queryKey: ["movie-suggestions", defferedSeachTerm],
-    queryFn: ({ pageParam = 1 }) => getKeywords(defferedSeachTerm, pageParam),
+    queryFn: ({ pageParam }) => getKeywords(defferedSeachTerm, pageParam),
     initialPageParam: 1,
+
     getNextPageParam: (lastPage) => {
-      const nextPage = lastPage.page + 1;
-      if (nextPage === 501) {
-        return undefined;
+      const hasNextPage = lastPage.results.length > 0;
+      if (hasNextPage) {
+        return lastPage.page + 1;
       }
-      return nextPage;
+      return undefined;
     },
     enabled: !!defferedSeachTerm,
   });
@@ -44,7 +56,7 @@ export default function MovieSearch() {
   const items = data ? data.pages.flatMap((d) => d.results) : [];
 
   const { isIntersecting, ref: intersectionRef } = useIntersectionObserver({
-    threshold: 0.3,
+    threshold: 0.5,
   });
 
   useEffect(() => {
@@ -54,34 +66,41 @@ export default function MovieSearch() {
   }, [fetchNextPage, hasNextPage, isIntersecting]);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <SearchButton />
       </DialogTrigger>
       <DialogContent>
         <div className="h-[250px] flex flex-col">
           <div className="border-b-2">
-            <SearchBar
-              value={searchTerm}
-              renderIcon={
-                status === "pending" && searchTerm !== ""
-                  ? () => (
-                      <LoaderCircle
-                        width={15}
-                        height={15}
-                        className="animate-spin"
-                      />
-                    )
-                  : undefined
-              }
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onChooseKeyword(searchTerm);
+              }}
+            >
+              <SearchBar
+                value={searchTerm}
+                renderIcon={
+                  isPending && searchTerm !== ""
+                    ? () => (
+                        <LoaderCircle
+                          width={15}
+                          height={15}
+                          className="animate-spin"
+                        />
+                      )
+                    : undefined
+                }
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </form>
           </div>
           <div className="flex-1 justify-center items-center flex ">
             {searchTerm === "" && <p>No Search</p>}
-            {status === "success" && items.length === 0 && <p>No Results</p>}
-            {status === "error" && <p>{error.message}</p>}
-            {status === "success" && items.length !== 0 && (
+            {isSuccess && items.length === 0 && <p>No Results</p>}
+            {isError && <p>{error.message}</p>}
+            {isSuccess && items.length !== 0 && (
               <GridResponsiveList
                 prefferedColumnSize={300}
                 listContainerStyle={{
@@ -94,7 +113,7 @@ export default function MovieSearch() {
                   <KeywordCard
                     keyword={item}
                     onClick={(keyword) => {
-                      console.log({ keyword });
+                      onChooseKeyword(keyword.name);
                     }}
                   />
                 )}
@@ -103,10 +122,8 @@ export default function MovieSearch() {
                   <div ref={intersectionRef} className="flex justify-center">
                     {isFetchingNextPage ? (
                       <LoaderCircle className="animate-spin" />
-                    ) : hasNextPage ? (
-                      "Load More"
                     ) : (
-                      ""
+                      hasNextPage && "Load More"
                     )}
                   </div>
                 }
